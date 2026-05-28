@@ -49,10 +49,35 @@ const deleteJob = (req, res)=>{
 
 }
 
+const analysis =(req, res)=>{
+    const totalApplications = jobs.length
+    if(totalApplications < 1){
+        return res.status(200).json({success: true, msg: "no applications yet"})
+    }
+    const totalResponses = jobs.filter(job => job.dateResponse !== null)
+    const responseRate = (totalResponses.length / totalApplications) * 100 + "%"
+
+    let intervals = 0
+    totalResponses.forEach(job => {
+        const before = new Date(job.dateApplied)
+        const after = new Date(job.dateResponse)
+
+        intervals += (after - before) / (1000 * 60 * 60 * 24)
+       
+    });
+    const avgResponse = intervals / totalResponses.length
+
+
+    
+
+    res.status(200).json({success: true, responseRate: responseRate, avgResponseTime: avgResponse + "days"})
+}
+
 module.exports= {
     getJobs, 
     getJobsById,
     createJob, 
     updateJob,
     deleteJob,
+    analysis,
 }
